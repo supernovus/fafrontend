@@ -1,0 +1,5 @@
+htdocs/scripts/*
+htdocs/style/semantic.min.css
+htdocs/fonts
+htdocs/images/*.gif
+.build
