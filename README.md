@@ -4,7 +4,8 @@
 
 This is the frontend web application that will power FreeAlways.
 
-It's still in the planning stages, so there's not much to see yet.
+This is in very early development, with a lot of details still undetermined,
+and not much code actually in place.
 
 See also: [FreeAlways Backend](https://github.com/supernovus/fabackend/)
 
