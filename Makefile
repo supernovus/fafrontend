@@ -68,7 +68,7 @@ htdocs/scripts/semantic.min.js: htdocs/scripts htdocs/style htdocs/images
 	mv -v .build/packaged/javascript/semantic.min.js htdocs/scripts/
 	mv -v .build/packaged/css/semantic.min.css htdocs/style/
 	mv -v .build/packaged/images/*.gif htdocs/images/
-	mv -v .build/packged/fonts htdocs/
+	mv -v .build/packaged/fonts htdocs/
 	rm -rv .build
 	rm -v $(SUI_FILE)
 

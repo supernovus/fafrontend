@@ -9,3 +9,5 @@ $(function () {
   }).start();
 });
 
+/* End of init.js */
+

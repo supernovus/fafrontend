@@ -23,7 +23,7 @@ function Backend (conf) {
  * This returns a jQuery Deferred object, to which you should use the
  * .done() and .fail() handlers to assign callbacks.
  *
- * This method itself assigns its own callbacks to fail() and done(),
+ * This method itself assigns its own callbacks to always(), fail() and done(),
  * which simply trigger a corresponding event in the Backend object itself.
  * This can be useful if you want to do logging or debugging on all requests.
  */
@@ -45,8 +45,14 @@ Backend.prototype.sendRequest (type, path, data) {
     request.contentType = 'application/json';
   }
 
-  var response = jQuery.ajax(opts);
-  
+  self.trigger("before", request);
+
+  var response = jQuery.ajax(request);
+ 
+  response.always(function (var1, var2, var3) {
+    self.trigger("always", var1, var2, var3);
+  });
+
   response.fail(function (jq, status, err) {
     self.trigger("fail", jq, status, err);
   });
@@ -56,6 +62,30 @@ Backend.prototype.sendRequest (type, path, data) {
   });
 
   return response;
+}
+
+/**
+ * Enable debugging.
+ *
+ * Adds callbacks to the "before" and "always" events that log the
+ * request and response respectively.
+ *
+ * Usage from Javascript debugging console:
+ *
+ *  faapp().backend.enableDebugging();
+ *
+ */
+Backend.prototype.enableDebugging = function () {
+  var self = this;
+
+  self.on("before", function (request) {
+    console.log("request>", request);
+  });
+
+  self.on("always", function (var1, var2, var3) {
+    console.log("response>", var1, var2, var3);
+  });
+
 }
 
 /* End of backend.js */

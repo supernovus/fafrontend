@@ -29,15 +29,25 @@ API.prototype.start = function () {
 }
 
 /**
- * A factory function to add the simplest type of wrapper methods
- * to the API. It doesn't get much simpler than this.
+ * Add a simple wrapper method to the API.
+ *
+ * The method simply calls a method of the same name on the backend,
+ * and triggers various events depending on the results.
+ * If you need more control, create a standalone method instead.
+ *
+ * This is a factory method, that is attached to the API class itself,
+ * these calls must be done before creating an instance of the API.
  */
-function addAPI (methodName) {
+API.addMethod = function (methodName) {
   API.prototype[methodName] = function () {
     var self = this;
+    self.trigger("before:"+methodName);
     self.backend[methodName].apply(self.backend, arguments)
       .done(function (data) {
         self.trigger(methodName, data);
+      })
+      .fail(function () {
+        self.trigger("fail:"+methodName);
       })
     ;
   }
