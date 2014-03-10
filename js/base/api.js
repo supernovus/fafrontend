@@ -19,6 +19,24 @@ function API (conf) {
    * Our backend object.
    */
   self.backend = new Backend(conf);
+
+  /**
+   * Call our init scripts.
+   */
+  self.init(conf);
+}
+
+/**
+ * A magical function, that simply look through its own properties,
+ * and if they are functions, calls them in the context of its parent,
+ * passing on the options passed to it.
+ */
+API.prototype.init = function () {
+  for (var init = this.init) {
+    if (typeof this.init[init] === "function") {
+      this.init[init].apply(this, arguments);
+    }
+  }
 }
 
 /**
@@ -51,6 +69,15 @@ API.addMethod = function (methodName) {
       })
     ;
   }
+}
+
+/**
+ * Add an init script.
+ *
+ * This is also a factory method, attached to the API class itself.
+ */
+API.addInit = function (name, func) {
+  API.prototype.init[name] = func;
 }
 
 /* End of api.js */

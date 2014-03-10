@@ -23,9 +23,9 @@ function Backend (conf) {
  * This returns a jQuery Deferred object, to which you should use the
  * .done() and .fail() handlers to assign callbacks.
  *
- * This method itself assigns its own callbacks to always(), fail() and done(),
- * which simply trigger a corresponding event in the Backend object itself.
- * This can be useful if you want to do logging or debugging on all requests.
+ * This method assigns its own callbacks to always(), fail() and done(),
+ * which simply trigger "after", "failure" and "success" events respectively,
+ * in the Backend object itself.
  */
 Backend.prototype.sendRequest (type, path, data) {
   var self = this;
@@ -38,27 +38,38 @@ Backend.prototype.sendRequest (type, path, data) {
   };
 
   if (data) {
-    if (typeof data === "object") {
-      data = JSON.stringify(data);
+    self.trigger("prepare", data, request);
+    if (!request.data)
+    { // Default data handling.
+      if (typeof data === "object") {
+        data = JSON.stringify(data);
+      }
+      request.data        = data;
+      request.contentType = 'application/json';
     }
-    request.data        = data;
-    request.contentType = 'application/json';
   }
 
   self.trigger("before", request);
 
-  var response = jQuery.ajax(request);
+  var response = $.ajax(request);
+
+  var transaction = {
+    request:  request,
+    response: response,
+    path:     path,
+    data:     data,
+  };
  
   response.always(function (var1, var2, var3) {
-    self.trigger("always", var1, var2, var3);
+    self.trigger("after", var1, var2, var3, transaction);
   });
 
   response.fail(function (jq, status, err) {
-    self.trigger("fail", jq, status, err);
+    self.trigger("failure", jq, status, err, transaction);
   });
 
   response.done(function (res, msg, jq) {
-    self.trigger("done", res, msg, jq);
+    self.trigger("success", res, msg, jq, transaction);
   });
 
   return response;
@@ -82,7 +93,7 @@ Backend.prototype.enableDebugging = function () {
     console.log("request>", request);
   });
 
-  self.on("always", function (var1, var2, var3) {
+  self.on("after", function (var1, var2, var3) {
     console.log("response>", var1, var2, var3);
   });
 

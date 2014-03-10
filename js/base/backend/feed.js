@@ -3,6 +3,8 @@
  */
 
 Backend.prototype.getFeed = function (page, filter) {
+  var self = this;
+
   var url = '/articles';
   
   if (filter.user)
@@ -12,7 +14,7 @@ Backend.prototype.getFeed = function (page, filter) {
 
   url += '/' + page;
 
-  this.sendRequest('GET', url);
+  return this.sendRequest('GET', url);
 }
 
 /* End of backend/feed.js */
